@@ -43,9 +43,9 @@ variables:
   - name: AML_CLUSTER_MIN_NODES
     value: 0
   - name: AML_CLUSTER_MAX_NODES
-    value: 4
+    value: 2
   - name: AML_CLUSTER_PRIORITY
-    value: lowpriority
+    value: dedicated
 
   # The name for the (docker/webapp) scoring image
   - name: IMAGE_NAME
