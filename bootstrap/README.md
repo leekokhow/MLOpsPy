@@ -16,3 +16,5 @@ To bootstrap from the existing MLOpsPython repository:
 `python bootstrap.py -d [dirpath] -n [projectname]`
     * `[dirpath]` is the absolute path to the root of the directory where MLOpsPython is cloned
     * `[projectname]` is the name of your ML project
+
+e.g. python bootstrap.py -d C:\Users\lee\Documents\GitHub\MLOpsPy -n Emp_Retention
