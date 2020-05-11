@@ -70,7 +70,7 @@ def main():
         "--model_name",
         type=str,
         help="Name of the Model",
-        default="diabetes_model.pkl",
+        default="emp_retention_model.pkl",
     )
 
     parser.add_argument(
@@ -180,7 +180,7 @@ def register_aml_model(
     build_uri=None
 ):
     try:
-        tagsValue = {"area": "diabetes_regression",
+        tagsValue = {"area": "emp_retention",
                      "run_id": run_id,
                      "experiment_name": exp.name}
         tagsValue.update(model_tags)
