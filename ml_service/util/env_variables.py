@@ -37,7 +37,7 @@ class Env(Singleton):
         self._model_version = os.environ.get('MODEL_VERSION')
         self._image_name = os.environ.get('IMAGE_NAME')
         self._db_cluster_id = os.environ.get("DB_CLUSTER_ID")
-        self._score_script = os.environ.get("SCORE_SCRIPT")
+        self._score_script_path = os.environ.get("SCORE_SCRIPT_PATH")
         self._build_uri = os.environ.get("BUILD_URI")
         self._dataset_name = os.environ.get("DATASET_NAME")
         self._datastore_name = os.environ.get("DATASTORE_NAME")
@@ -49,7 +49,7 @@ class Env(Singleton):
         self._rebuild_env = os.environ.get("AML_REBUILD_ENVIRONMENT",
                                            "false").lower().strip() == "true"
         # add new variables here
-        self._data_prep_path = os.environ.get("DATA_PREP_SCRIPT_PATH")
+        self._data_prep_script_path = os.environ.get("DATA_PREP_SCRIPT_PATH")
         self._file_name = os.environ.get("FILE_NAME")
 
     @property

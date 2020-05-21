@@ -68,15 +68,17 @@ def main():
                                   data_reference_name="Raw_Data_File",
                                   path_on_datastore=dataset_name + '/' + file_name)
 
-	# Create the PipelineParameter and PipelineData used for prepare data step.
+    # Create the PipelineParameter and PipelineData used for prepare data step.
     # clean_data_folder is used to store the clean data file.
+    # Take note when create PipelineData, you don't need to specify the full folder path, 
+    # just need the name of the subfolder to be created e.g. "clean_data_folder"
     clean_data_file = PipelineParameter(name="clean_data_file", default_value="/clean_data.csv")
     clean_data_folder = PipelineData("clean_data_folder", datastore=datastore)
 
     # raw_data_file is a Datareference and produce clean data to be used for model training.
     prepDataStep = PythonScriptStep(name="Prepare Data",
                                     source_directory=e.sources_directory_train,
-                                    script_name=e.data_prep_path, 
+                                    script_name=e.data_prep_script_path, 
                                     arguments=["--raw_data_file", raw_data_file, 
                                     "--clean_data_folder", clean_data_folder,
                                     "--clean_data_file", clean_data_file],
@@ -99,10 +101,11 @@ def main():
 
     trainingStep = EstimatorStep(name="Model Training", 
                                  estimator=est,
-                                 estimator_entry_script_arguments=["--clean_data_folder", clean_data_folder,
-                                                                   "--new_model_folder", new_model_folder,
-                                                                   "--clean_data_file", clean_data_file.default_value,
-                                                                   "--new_model_file", new_model_file.default_value],
+                                 estimator_entry_script_arguments=[
+								 "--clean_data_folder", clean_data_folder,
+                                 "--new_model_folder", new_model_folder,
+                                 "--clean_data_file", clean_data_file.default_value,
+                                 "--new_model_file", new_model_file.default_value],
                                  runconfig_pipeline_params=None, 
                                  inputs=[clean_data_folder], 
                                  outputs=[new_model_folder], 
@@ -150,7 +153,6 @@ def main():
 	print ("Pipeline is built")
 	
     pipeline._set_experiment_name
-
     published_pipeline = pipeline.publish(
         name=e.pipeline_name,
         description="Predict Employee Retention Model training/retraining pipeline",

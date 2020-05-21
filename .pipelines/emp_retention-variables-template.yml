@@ -17,7 +17,7 @@ variables:
   - name: REGISTER_SCRIPT_PATH
     value: register/register_model.py
     # The path to the model scoring script relative to SOURCES_DIR_TRAIN
-  - name: SCORE_SCRIPT
+  - name: SCORE_SCRIPT_PATH
     value: scoring/score.py
   - name: FILE_NAME
     value: training-data.csv
