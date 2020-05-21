@@ -6,8 +6,10 @@ variables:
   - name: SOURCES_DIR_TRAIN
     value: emp_retention
     # The path to the model training script under SOURCES_DIR_TRAIN
+  - name: DATA_PREP_SCRIPT_PATH
+    value: training/prep_data.py
   - name: TRAIN_SCRIPT_PATH
-    value: training/train_aml.py
+    value: training/training_model.py
     # The path to the model evaluation script under SOURCES_DIR_TRAIN
   - name: EVALUATE_SCRIPT_PATH
     value: evaluate/evaluate_model.py
@@ -17,21 +19,23 @@ variables:
     # The path to the model scoring script relative to SOURCES_DIR_TRAIN
   - name: SCORE_SCRIPT
     value: scoring/score.py
+  - name: FILE_NAME
+    value: training-data.csv
 
   # Azure ML Variables
   - name: EXPERIMENT_NAME
-    value: mlopspython
+    value: predict-employee-retention
   - name: DATASET_NAME
-    value: emp_retention_ds
+    value: predict-employee-retention-training-data
   # Uncomment DATASTORE_NAME if you have configured non default datastore to point to your data   
   # - name: DATASTORE_NAME
   #   value: datablobstore
   - name: DATASET_VERSION
     value: latest
   - name: TRAINING_PIPELINE_NAME
-    value: "emp_retention-Training-Pipeline"
+    value: "Employee Retention Pipeline"
   - name: MODEL_NAME
-    value: emp_retention_model.pkl
+    value: predict-employee-retention-model
 
   # AML Compute Cluster Config
   - name: AML_ENV_NAME
@@ -39,7 +43,7 @@ variables:
   - name: AML_COMPUTE_CLUSTER_CPU_SKU
     value: STANDARD_DS2_V2
   - name: AML_COMPUTE_CLUSTER_NAME
-    value: train-cluster
+    value: cpucluster
   - name: AML_CLUSTER_MIN_NODES
     value: 0
   - name: AML_CLUSTER_MAX_NODES
@@ -49,7 +53,7 @@ variables:
 
   # The name for the (docker/webapp) scoring image
   - name: IMAGE_NAME
-    value: "emp_retentiontrained"
+    value: "emp_retention_trained"
  
     # Optional. Used by a training pipeline with R on Databricks
   - name: DB_CLUSTER_ID
@@ -57,8 +61,8 @@ variables:
 
   # These are the default values set in ml_service\util\env_variables.py. Uncomment and override if desired.
     # Set to false to disable the evaluation step in the ML pipeline and register the newly trained model unconditionally.
-  # - name: RUN_EVALUATION
-  #   value: "true"
+  - name: RUN_EVALUATION
+    value: "true"
     # Set to false to register the model regardless of the outcome of the evaluation step in the ML pipeline.
   # - name: ALLOW_RUN_CANCEL
   #   value: "true"

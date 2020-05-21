@@ -3,12 +3,13 @@ from azureml.pipeline.steps import PythonScriptStep
 from azureml.pipeline.core import Pipeline, PipelineData
 from azureml.core import Workspace, Dataset, Datastore
 from azureml.core.runconfig import RunConfiguration
-from ml_service.pipelines.load_sample_data import create_sample_data_csv
 from ml_service.util.attach_compute import get_compute
 from ml_service.util.env_variables import Env
 from ml_service.util.manage_environment import get_environment
 import os
 
+from azureml.data.data_reference import DataReference
+from azureml.pipeline.steps import EstimatorStep
 
 def main():
     e = Env()
@@ -42,120 +43,117 @@ def main():
         datastore_name = aml_workspace.get_default_datastore().name
     run_config.environment.environment_variables["DATASTORE_NAME"] = datastore_name  # NOQA: E501
 
-    model_name_param = PipelineParameter(
-        name="model_name", default_value=e.model_name)
-    dataset_version_param = PipelineParameter(
-        name="dataset_version", default_value=e.dataset_version)
-    data_file_path_param = PipelineParameter(
-        name="data_file_path", default_value="none")
-    caller_run_id_param = PipelineParameter(
-        name="caller_run_id", default_value="none")
-
     # Get dataset name
     dataset_name = e.dataset_name
+	file_name = e.file_name
+
+	# Get datastore name
+	datatstore = Datastore.get(aml_workspace, datastore_name)
 
     # Check to see if dataset exists
     if (dataset_name not in aml_workspace.datasets):
-        # This call creates an example CSV from sklearn sample data. If you
-        # have already bootstrapped your project, you can comment this line
-        # out and use your own CSV.
-        create_sample_data_csv()
+        raise Exception("Could not find dataset at \"%s\" in Workspace." % dataset_name)
+    else:
+	    # Download a registered FileDataset (training-data.csv) from workspace to local folder
+        dataset = Dataset.get_by_name(aml_workspace, name=dataset_name)
+        dataset.download(target_path='.', overwrite=True)
 
-        # Use a CSV to read in the data set.
-        file_name = 'emp_retention.csv'
+        # Upload data file from local to datastore.
+        datastore.upload_files([file_name], target_path=dataset_name, overwrite=True) 
+	
+			
+    # Reference the data uploaded to blob storage using DataReference
+    # Assign the datasource to input_data variable which will be used to pass to the pipeline step.
+    raw_data_file = DataReference(datastore=datastore,
+                                  data_reference_name="Raw_Data_File",
+                                  path_on_datastore=dataset_name + '/' + file_name)
 
-        if (not os.path.exists(file_name)):
-            raise Exception("Could not find CSV dataset at \"%s\". If you have bootstrapped your project, you will need to provide a CSV." % file_name)  # NOQA: E501
+	# Create the PipelineParameter and PipelineData used for prepare data step.
+    # clean_data_folder is used to store the clean data file.
+    clean_data_file = PipelineParameter(name="clean_data_file", default_value="/clean_data.csv")
+    clean_data_folder = PipelineData("clean_data_folder", datastore=datastore)
 
-        # Upload file to default datastore in workspace
-        datatstore = Datastore.get(aml_workspace, datastore_name)
-        target_path = 'training-data/'
-        datatstore.upload_files(
-            files=[file_name],
-            target_path=target_path,
-            overwrite=True,
-            show_progress=False)
+    # raw_data_file is a Datareference and produce clean data to be used for model training.
+    prepDataStep = PythonScriptStep(name="Prepare Data",
+                                    source_directory=e.sources_directory_train,
+                                    script_name=e.data_prep_path, 
+                                    arguments=["--raw_data_file", raw_data_file, 
+                                    "--clean_data_folder", clean_data_folder,
+                                    "--clean_data_file", clean_data_file],
+                                    inputs=[raw_data_file],
+                                    outputs=[clean_data_folder],
+                                    compute_target=aml_compute)
+		
+	print("Step Prepare Data created")
+	
+    # Create the PipelineParameter and PipelineData used for model training step.
+    # new_model_folder is used to store the model .pkl file.
+    new_model_file = PipelineParameter(name="new_model_file ", default_value='/'+e.model_name+'.pkl')
+    new_model_folder = PipelineData("new_model_folder", datastore=datastore)
 
-        # Register dataset
-        path_on_datastore = os.path.join(target_path, file_name)
-        dataset = Dataset.Tabular.from_delimited_files(
-            path=(datatstore, path_on_datastore))
-        dataset = dataset.register(
-            workspace=aml_workspace,
-            name=dataset_name,
-            description='emp_retention training data',
-            tags={'format': 'CSV'},
-            create_new_version=True)
+	# Create an Estimator (in this case we use the SKLearn estimator)
+    est = SKLearn(source_directory=e.sources_directory_train,
+                  entry_script=e.train_script_path,
+                  conda_packages=['scikit-learn==0.20.3'],
+                  compute_target=aml_compute)
 
-    # Create a PipelineData to pass data between steps
-    pipeline_data = PipelineData(
-        'pipeline_data',
-        datastore=aml_workspace.get_default_datastore())
-
-    train_step = PythonScriptStep(
-        name="Train Model",
-        script_name=e.train_script_path,
-        compute_target=aml_compute,
-        source_directory=e.sources_directory_train,
-        outputs=[pipeline_data],
-        arguments=[
-            "--model_name", model_name_param,
-            "--step_output", pipeline_data,
-            "--dataset_version", dataset_version_param,
-            "--data_file_path", data_file_path_param,
-            "--caller_run_id", caller_run_id_param,
-            "--dataset_name", dataset_name,
-        ],
-        runconfig=run_config,
-        allow_reuse=True,
-    )
+    trainingStep = EstimatorStep(name="Model Training", 
+                                 estimator=est,
+                                 estimator_entry_script_arguments=["--clean_data_folder", clean_data_folder,
+                                                                   "--new_model_folder", new_model_folder,
+                                                                   "--clean_data_file", clean_data_file.default_value,
+                                                                   "--new_model_file", new_model_file.default_value],
+                                 runconfig_pipeline_params=None, 
+                                 inputs=[clean_data_folder], 
+                                 outputs=[new_model_folder], 
+                                 compute_target=aml_compute)
+			   
     print("Step Train created")
 
-    evaluate_step = PythonScriptStep(
-        name="Evaluate Model ",
-        script_name=e.evaluate_script_path,
-        compute_target=aml_compute,
-        source_directory=e.sources_directory_train,
-        arguments=[
-            "--model_name", model_name_param,
-            "--allow_run_cancel", e.allow_run_cancel,
-        ],
-        runconfig=run_config,
-        allow_reuse=False,
-    )
+    # Create a PipelineParameter to pass the name of the model to be evaluated.
+    model_name_param = PipelineParameter(name="model_name", default_value=e.model_name)
+
+    evaluateStep = PythonScriptStep(name="Evaluate Model",
+                                    source_directory=e.sources_directory_train,
+                                    script_name=e.evaluate_script_path, 
+                                    arguments=["--model_name", model_name_param],
+                                    compute_target=aml_compute)
+		
     print("Step Evaluate created")
 
-    register_step = PythonScriptStep(
-        name="Register Model ",
-        script_name=e.register_script_path,
-        compute_target=aml_compute,
-        source_directory=e.sources_directory_train,
-        inputs=[pipeline_data],
-        arguments=[
-            "--model_name", model_name_param,
-            "--step_input", pipeline_data,
-        ],
-        runconfig=run_config,
-        allow_reuse=False,
-    )
+    registerStep = PythonScriptStep(name="Register Model",
+                                    source_directory=e.sources_directory_train,
+                                    script_name=e.register_script_path, 
+                                    arguments=["--new_model_folder", new_model_folder,
+                                               "--new_model_file", new_model_file,
+                                               "--model_name", model_name],
+                                    inputs=[new_model_folder],
+                                    compute_target=aml_compute)
+	
     print("Step Register created")
+	
     # Check run_evaluation flag to include or exclude evaluation step.
     if ((e.run_evaluation).lower() == 'true'):
         print("Include evaluation step before register step.")
-        evaluate_step.run_after(train_step)
-        register_step.run_after(evaluate_step)
-        steps = [train_step, evaluate_step, register_step]
+		# Chain the steps in sequence.
+        trainingStep.run_after(prepDataStep)
+        evaluateStep.run_after(trainingStep)
+        registerStep.run_after(evaluateStep)
     else:
         print("Exclude evaluation step and directly run register step.")
-        register_step.run_after(train_step)
-        steps = [train_step, register_step]
+		# Chain the steps in sequence.
+        trainingStep.run_after(prepDataStep)
+        registerStep.run_after(trainingStep)
 
-    train_pipeline = Pipeline(workspace=aml_workspace, steps=steps)
-    train_pipeline._set_experiment_name
-    train_pipeline.validate()
-    published_pipeline = train_pipeline.publish(
+    pipeline = Pipeline(workspace=aml_workspace, steps=[registerStep])
+	pipeline.validate()
+	print ("Pipeline is built")
+	
+    pipeline._set_experiment_name
+
+    published_pipeline = pipeline.publish(
         name=e.pipeline_name,
-        description="Model training/retraining pipeline",
+        description="Predict Employee Retention Model training/retraining pipeline",
         version=e.build_id
     )
     print(f'Published pipeline: {published_pipeline.name}')

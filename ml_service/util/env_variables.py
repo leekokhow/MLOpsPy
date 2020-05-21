@@ -23,9 +23,9 @@ class Env(Singleton):
         self._app_secret = os.environ.get("SP_APP_SECRET")
         self._vm_size = os.environ.get("AML_COMPUTE_CLUSTER_CPU_SKU")
         self._compute_name = os.environ.get("AML_COMPUTE_CLUSTER_NAME")
-        self._vm_priority = os.environ.get("AML_CLUSTER_PRIORITY", 'lowpriority')  # noqa E501
+        self._vm_priority = os.environ.get("AML_CLUSTER_PRIORITY", 'dedicated')  # noqa E501
         self._min_nodes = int(os.environ.get("AML_CLUSTER_MIN_NODES", 0))
-        self._max_nodes = int(os.environ.get("AML_CLUSTER_MAX_NODES", 4))
+        self._max_nodes = int(os.environ.get("AML_CLUSTER_MAX_NODES", 2))
         self._build_id = os.environ.get("BUILD_BUILDID")
         self._pipeline_name = os.environ.get("TRAINING_PIPELINE_NAME")
         self._sources_directory_train = os.environ.get("SOURCES_DIR_TRAIN")
@@ -48,6 +48,9 @@ class Env(Singleton):
         self._aml_env_name = os.environ.get("AML_ENV_NAME")
         self._rebuild_env = os.environ.get("AML_REBUILD_ENVIRONMENT",
                                            "false").lower().strip() == "true"
+        # add new variables here
+        self._data_prep_path = os.environ.get("DATA_PREP_SCRIPT_PATH")
+        self._file_name = os.environ.get("FILE_NAME")
 
     @property
     def workspace_name(self):

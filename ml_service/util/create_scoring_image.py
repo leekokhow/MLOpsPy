@@ -24,7 +24,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-model = Model(ws, name=e.model_name, version=e.model_version)
+model = Model(ws, name=e.model_name)
 sources_dir = e.sources_directory_train
 if (sources_dir is None):
     sources_dir = 'emp_retention'
