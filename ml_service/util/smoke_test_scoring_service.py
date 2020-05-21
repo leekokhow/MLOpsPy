@@ -7,9 +7,8 @@ from ml_service.util.env_variables import Env
 import secrets
 
 
-input = {"data": [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                  [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]]}
-output_len = 2
+input = {"data": [[0.1, 0.77, 6.0, 272.0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}
+output_len = 1
 
 
 def call_web_service(e, service_type, service_name):
