@@ -14,8 +14,6 @@ trigger:
     include:
     - emp_retention/
     - ml_service/pipelines/emp_retention_build_train_pipeline.py
-    - ml_service/pipelines/emp_retention_build_train_pipeline_with_r.py
-    - ml_service/pipelines/emp_retention_build_train_pipeline_with_r_on_dbricks.py
 
 variables:
 - template: emp_retention-variables-template.yml
