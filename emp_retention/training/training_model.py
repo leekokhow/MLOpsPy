@@ -17,8 +17,8 @@ def generate_model(dataset, run):
     y = dataset.loc[:, dataset.columns == "left"].values.flatten()
 
     X_train, X_test, y_train, y_test
-      = train_test_split(X, y, test_size=0.2, 
-                         stratify=y, random_state=1)
+    = train_test_split(X, y, test_size=0.2,
+                           stratify=y, random_state=1)
 
     clf = LogisticRegression(solver='liblinear', random_state=0)
     clf.fit(X_train, y_train)
@@ -38,7 +38,7 @@ def generate_model(dataset, run):
                          cf_matrix.flatten() / np.sum(cf_matrix)]
     labels = [f"{v1} {v2} ({v3})" for v1, v2, v3 in
               zip(group_names, group_counts, group_percentages)]
-    labels = np.asarray(labels).reshape(2,2)
+    labels = np.asarray(labels).reshape(2, 2)
     run.log('Confusion Matrix', labels)
 
     # Display statistics
@@ -46,9 +46,12 @@ def generate_model(dataset, run):
     precision = cf_matrix[1, 1] / sum(cf_matrix[:, 1])
     recall = cf_matrix[1, 1] / sum(cf_matrix[1, :])
     f1_score = 2*precision*recall / (precision + recall)
-    stats_text = "\n\nAccuracy={:0.3f}\nPrecision={:0.3f}" +
-                     "\nRecall={:0.3f}\nF1 Score={:0.3f}".format(
-                     accuracy, precision, recall, f1_score)
+    stats_text = "\n\nAccuracy={:0.3f}\n" + "Precision={:0.3f}\n"
+                + "Recall={:0.3f}\n"
+                + "F1 Score={:0.3f}".format(accuracy,
+                                             precision,
+                                             recall,
+                                             f1_score)
     run.log('Statistics', stats_text)
 
     # Log confusion matrix as JSON.
