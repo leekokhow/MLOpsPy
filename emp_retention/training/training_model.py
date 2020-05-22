@@ -16,23 +16,23 @@ def generate_model(dataset, run):
     X = dataset.loc[:, dataset.columns != "left"].values
     y = dataset.loc[:, dataset.columns == "left"].values.flatten()
 
-    X_train, X_test, y_train, y_test 
-      = train_test_split(X, y, test_size = 0.2, 
-                         stratify = y, random_state = 1)
+    X_train, X_test, y_train, y_test
+      = train_test_split(X, y, test_size=0.2, 
+                         stratify=y, random_state=1)
 
-    clf=LogisticRegression(solver='liblinear', random_state=0)
+    clf = LogisticRegression(solver='liblinear', random_state=0)
     clf.fit(X_train, y_train)
 
     # View the model's coefficients and bias
     run.log('Coefficients', clf.coef_)
     run.log('Bias', clf.intercept_)
 
-    y_pred_LR=clf.predict(X_test)
+    y_pred_LR = clf.predict(X_test)
 
     # Display confusion matrix
     cf_matrix = confusion_matrix(y_test, y_pred_LR)
     group_names = ['True Neg', 'False Pos', 'False Neg', 'True Pos']
-    group_counts = ["{0:0.0f}".format(value) for value in 
+    group_counts = ["{0:0.0f}".format(value) for value in
                     cf_matrix.flatten()]
     group_percentages = ["{0:.2%}".format(value) for value in
                          cf_matrix.flatten() / np.sum(cf_matrix)]
@@ -43,12 +43,12 @@ def generate_model(dataset, run):
 
     # Display statistics
     accuracy = np.trace(cf_matrix) / float(np.sum(cf_matrix))
-    precision = cf_matrix[1,1] / sum(cf_matrix[:,1])
-    recall = cf_matrix[1,1] / sum(cf_matrix[1,:])
+    precision = cf_matrix[1, 1] / sum(cf_matrix[:, 1])
+    recall = cf_matrix[1, 1] / sum(cf_matrix[1, :])
     f1_score = 2*precision*recall / (precision + recall)
     stats_text = "\n\nAccuracy={:0.3f}\nPrecision={:0.3f}" +
-                 "\nRecall={:0.3f}\nF1 Score={:0.3f}".format(
-                 accuracy, precision, recall, f1_score)
+                     "\nRecall={:0.3f}\nF1 Score={:0.3f}".format(
+                     accuracy, precision, recall, f1_score)
     run.log('Statistics', stats_text)
 
     # Log confusion matrix as JSON.
