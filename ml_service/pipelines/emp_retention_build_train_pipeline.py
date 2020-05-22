@@ -72,7 +72,8 @@ def main():
 
     print("Step Prepare Data created")
 
-    # Create an Estimator (in this case we use the SKLearn estimator)
+    new_model_file = PipelineParameter(name="new_model_file ", default_value='/'+e.model_name+'.pkl')
+    new_model_folder = PipelineData("new_model_folder", datastore=datastore)
     est = SKLearn(source_directory=e.sources_directory_train,
         entry_script=e.train_script_path,
         conda_packages=['scikit-learn==0.20.3'],
