@@ -9,7 +9,7 @@ def main():
     # retrieve argument configured through script_params in estimator
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name", dest='model_name', type=str,
-                help="Name of the model to retrieve from Workspace")
+                        help="Name of the model to retrieve from Workspace")
     args = parser.parse_args()
 
     # Get the current run
