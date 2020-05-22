@@ -2,8 +2,10 @@
 import numpy as np
 from sklearn.externals import joblib
 from azureml.core.model import Model
-from inference_schema.schema_decorators import input_schema, output_schema
-from inference_schema.parameter_types.numpy_parameter_type import NumpyParameterType
+from inference_schema.schema_decorators 
+import input_schema, output_schema
+from inference_schema.parameter_types.numpy_parameter_type 
+import NumpyParameterType
 
 def init():
     global model

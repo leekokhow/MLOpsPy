@@ -9,7 +9,7 @@ def main():
     # retrieve argument configured through script_params in estimator
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name", dest='model_name', type=str,
-        help="Name of the model to retrieve from Workspace")
+                help="Name of the model to retrieve from Workspace")
     args = parser.parse_args()
 
     # Get the current run
@@ -43,22 +43,19 @@ def main():
             model = None
         else:
             raise
-
     # Perform comparison. Just do a simple comparison: 
     # If Accuracy improves, proceed next step to register model.
     if(model is not None):
         if(new_metrics['Accuracy'] >= current_metrics['Accuracy']):
-            run.log("Result",
-                "New Accuracy is as good as current, will proceed \
-                to register new model.")
+            run.log("Result", "New Accuracy is as good as current, \
+                will proceed to register new model.")
         else:
-            run.log("Result",
-                "New Accuracy is worse than current, will not \
-                register model. Processing cancelled.")
+            run.log("Result", "New Accuracy is worse than current, \
+                will not register model. Processing cancelled.")
             run.parent.cancel()
     else:
-        run.log("Result",
-            "This is the first model, will proceed to register the model.")
+        run.log("Result", "This is the first model, will proceed \
+            to register the model.")
 
 
 if __name__ == '__main__':
