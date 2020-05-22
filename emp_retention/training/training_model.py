@@ -16,9 +16,10 @@ def generate_model(dataset, run):
     X = dataset.loc[:, dataset.columns != "left"].values
     y = dataset.loc[:, dataset.columns == "left"].values.flatten()
 
-    X_train, X_test, y_train, y_test
-    = train_test_split(X, y, test_size=0.2,
-                           stratify=y, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                        test_size=0.2,
+                                                        stratify=y,
+                                                        random_state=1)
 
     clf = LogisticRegression(solver='liblinear', random_state=0)
     clf.fit(X_train, y_train)
@@ -46,13 +47,19 @@ def generate_model(dataset, run):
     precision = cf_matrix[1, 1] / sum(cf_matrix[:, 1])
     recall = cf_matrix[1, 1] / sum(cf_matrix[1, :])
     f1_score = 2*precision*recall / (precision + recall)
-    stats_text = "\n\nAccuracy={:0.3f}\n" + "Precision={:0.3f}\n"
-                + "Recall={:0.3f}\n"
-                + "F1 Score={:0.3f}".format(accuracy,
-                                             precision,
-                                             recall,
-                                             f1_score)
+
+    stats_text = "\n\nAccuracy={:0.3f}\n".format(accuracy) + \
+        "Precision={:0.3f}\n".format(precision) + \
+        "Recall={:0.3f}\n".format(recall) + \
+        "F1 Score={:0.3f}".format(f1_score)
     run.log('Statistics', stats_text)
+
+    # Log the following metrics to the parent run so that
+    # these are available for model evaluation later.
+    run.parent.log('Accuracy', accuracy)
+    run.parent.log('Precision', precision)
+    run.parent.log('Recall', recall)
+    run.parent.log('F1-score', f1_score)
 
     # Log confusion matrix as JSON.
     cf_matrix_json = {"schema_type": "confusion_matrix",
@@ -64,13 +71,6 @@ def generate_model(dataset, run):
                              cf_matrix_json,
                              description='Confusion matrix generated \
                              for the run')
-
-    # Log the following metrics to the parent run so that
-    # these are available for model evaluation later.
-    run.parent.log('Accuracy', accuracy)
-    run.parent.log('Precision', precision)
-    run.parent.log('Recall', recall)
-    run.parent.log('F1-score', f1_score)
     return clf
 
 
