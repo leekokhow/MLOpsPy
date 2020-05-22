@@ -43,7 +43,8 @@ def main():
             model = None
         else:
             raise
-    # Perform comparison. Just do a simple comparison: 
+
+    # Perform comparison. Just do a simple comparison:
     # If Accuracy improves, proceed next step to register model.
     if(model is not None):
         if(new_metrics['Accuracy'] >= current_metrics['Accuracy']):
