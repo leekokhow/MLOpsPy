@@ -56,8 +56,9 @@ def main():
                                overwrite=True)
 
     raw_data_file = DataReference(datastore=datastore,
-        data_reference_name="Raw_Data_File",
-        path_on_datastore=dataset_name + '/' + file_name)
+                                  data_reference_name="Raw_Data_File",
+                                  path_on_datastore=dataset_name + '/'
+                                  + file_name)
 
     clean_data_file = PipelineParameter(name="clean_data_file",
                                         default_value="/clean_data.csv")
@@ -65,38 +66,44 @@ def main():
                                      datastore=datastore)
 
     prepDataStep = PythonScriptStep(name="Prepare Data",
-                       source_directory=e.sources_directory_train,
-                       script_name=e.data_prep_script_path,
-                       arguments=["--raw_data_file", raw_data_file,
-                                  "--clean_data_folder", clean_data_folder,
-                                  "--clean_data_file", clean_data_file],
-                       inputs=[raw_data_file],
-                       outputs=[clean_data_folder],
-                       compute_target=aml_compute)
+                                    source_directory=e.sources_directory_train,
+                                    script_name=e.data_prep_script_path,
+                                    arguments=["--raw_data_file",
+                                               raw_data_file,
+                                               "--clean_data_folder",
+                                               clean_data_folder,
+                                               "--clean_data_file",
+                                               clean_data_file],
+                                    inputs=[raw_data_file],
+                                    outputs=[clean_data_folder],
+                                    compute_target=aml_compute)
 
     print("Step Prepare Data created")
 
-    new_model_file = PipelineParameter(name="new_model_file ", \
+    new_model_file = PipelineParameter(name="new_model_file ",
                                  default_value='/' + e.model_name + '.pkl')
     new_model_folder = PipelineData("new_model_folder", datastore=datastore)
     est = SKLearn(source_directory=e.sources_directory_train,
                   entry_script=e.train_script_path,
-                  pip_packages=['azureml-sdk', 'scikit-learn==0.20.3', \
+                  pip_packages=['azureml-sdk', 'scikit-learn==0.20.3',
                                 'azureml-dataprep[pandas,fuse]>=1.1.14'],
                   compute_target=aml_compute)
 
     trainingStep = EstimatorStep(
         name="Model Training",
         estimator=est,
-        estimator_entry_script_arguments=
-            ["--clean_data_folder", clean_data_folder,
-             "--new_model_folder", new_model_folder,
-             "--clean_data_file", clean_data_file.default_value,
-             "--new_model_file", new_model_file.default_value],
-            runconfig_pipeline_params=None,
-            inputs=[clean_data_folder],
-            outputs=[new_model_folder],
-            compute_target=aml_compute)
+        estimator_entry_script_arguments=["--clean_data_folder",
+                                          clean_data_folder,
+                                          "--new_model_folder",
+                                          new_model_folder,
+                                          "--clean_data_file",
+                                          clean_data_file.default_value,
+                                          "--new_model_file",
+                                          new_model_file.default_value],
+                                         runconfig_pipeline_params=None,
+                                         inputs=[clean_data_folder],
+                                         outputs=[new_model_folder],
+                                         compute_target=aml_compute)
 
     print("Step Train created")
 
