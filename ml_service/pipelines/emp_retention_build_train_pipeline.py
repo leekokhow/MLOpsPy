@@ -93,7 +93,7 @@ def main():
 
     print("Step Train created")
 
-    model_name_param = PipelineParameter(name="model_name", default_value=model_name)
+    model_name_param = PipelineParameter(name="model_name", default_value=e.model_name)
 
     evaluateStep = PythonScriptStep(
         name="Evaluate Model",
