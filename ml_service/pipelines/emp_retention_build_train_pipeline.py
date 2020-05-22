@@ -81,7 +81,8 @@ def main():
     print("Step Prepare Data created")
 
     new_model_file = PipelineParameter(name="new_model_file ",
-                                 default_value='/' + e.model_name + '.pkl')
+                                       default_value='/' + e.model_name
+                                       + '.pkl')
     new_model_folder = PipelineData("new_model_folder", datastore=datastore)
     est = SKLearn(source_directory=e.sources_directory_train,
                   entry_script=e.train_script_path,
@@ -100,10 +101,10 @@ def main():
                                           clean_data_file.default_value,
                                           "--new_model_file",
                                           new_model_file.default_value],
-                                         runconfig_pipeline_params=None,
-                                         inputs=[clean_data_folder],
-                                         outputs=[new_model_folder],
-                                         compute_target=aml_compute)
+        runconfig_pipeline_params=None,
+        inputs=[clean_data_folder],
+        outputs=[new_model_folder],
+        compute_target=aml_compute)
 
     print("Step Train created")
 
