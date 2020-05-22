@@ -176,7 +176,7 @@ class Env(Singleton):
     def rebuild_env(self):
         return self._rebuild_env
 
-	# Added new methods	
+    # Added new methods
     @property
     def data_prep_script_path(self):
         return self._data_prep_script_path
