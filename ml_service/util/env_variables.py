@@ -23,7 +23,7 @@ class Env(Singleton):
         self._app_secret = os.environ.get("SP_APP_SECRET")
         self._vm_size = os.environ.get("AML_COMPUTE_CLUSTER_CPU_SKU")
         self._compute_name = os.environ.get("AML_COMPUTE_CLUSTER_NAME")
-        self._vm_priority = os.environ.get("AML_CLUSTER_PRIORITY", 'dedicated')  # noqa E501
+        self._vm_priority = os.environ.get("AML_CLUSTER_PRIORITY", 'dedicated')
         self._min_nodes = int(os.environ.get("AML_CLUSTER_MIN_NODES", 0))
         self._max_nodes = int(os.environ.get("AML_CLUSTER_MAX_NODES", 2))
         self._build_id = os.environ.get("BUILD_BUILDID")
@@ -141,8 +141,8 @@ class Env(Singleton):
         return self._image_name
 
     @property
-    def score_script(self):
-        return self._score_script
+    def score_script_path(self):
+        return self._score_script_path
 
     @property
     def build_uri(self):
@@ -175,3 +175,12 @@ class Env(Singleton):
     @property
     def rebuild_env(self):
         return self._rebuild_env
+
+	# Added new methods	
+    @property
+    def data_prep_script_path(self):
+        return self._data_prep_script_path
+
+    @property
+    def file_name(self):
+        return self._file_name
