@@ -8,13 +8,13 @@ from azureml.exceptions import WebserviceException
 def main():
     # retrieve argument configured through script_params in estimator
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", dest='model_name', type=str, 
+    parser.add_argument("--model_name", dest='model_name', type=str,
         help="Name of the model to retrieve from Workspace")
     args = parser.parse_args()
 
     # Get the current run
     run = Run.get_context()
-    
+
     # Get metrics from current model and compare with the metrics
     # of the new model. The metrics of the new model can be retrieved
     # from run.parent.get_metrics, which were created in training_model.py
@@ -44,18 +44,21 @@ def main():
         else:
             raise
 
-    # Perform comparison. Just do a simple comparison: If Accuracy improves, proceed next step to register model.
+    # Perform comparison. Just do a simple comparison: 
+    # If Accuracy improves, proceed next step to register model.
     if(model is not None):
         if(new_metrics['Accuracy'] >= current_metrics['Accuracy']):
             run.log("Result",
-            "New Accuracy is as good as current, will proceed to register new model.")
+                "New Accuracy is as good as current, will proceed \
+                to register new model.")
         else:
             run.log("Result",
-            "New Accuracy is worse than current, will not register model. Processing cancelled.")
+                "New Accuracy is worse than current, will not \
+                register model. Processing cancelled.")
             run.parent.cancel()
     else:
         run.log("Result",
-        "This is the first model, will proceed to register the model.")
+            "This is the first model, will proceed to register the model.")
 
 
 if __name__ == '__main__':
