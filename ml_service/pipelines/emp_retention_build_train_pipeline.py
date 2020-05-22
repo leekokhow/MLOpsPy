@@ -52,69 +52,67 @@ def main():
         datastore.upload_files([file_name], target_path=dataset_name, overwrite=True) 
 
     raw_data_file = DataReference(datastore=datastore,
-                          data_reference_name="Raw_Data_File",
-                          path_on_datastore=dataset_name + '/' + file_name)
+        data_reference_name="Raw_Data_File",
+        path_on_datastore=dataset_name + '/' + file_name)
 
     clean_data_file = PipelineParameter(name="clean_data_file",
-                            default_value="/clean_data.csv")
+        default_value="/clean_data.csv")
     clean_data_folder = PipelineData("clean_data_folder",
-                            datastore=datastore)
-
+        datastore=datastore)
 
     prepDataStep = PythonScriptStep(name="Prepare Data",
-                         source_directory=e.sources_directory_train,
-                         script_name=e.data_prep_script_path, 
-                         arguments=["--raw_data_file", raw_data_file, 
-                             "--clean_data_folder", clean_data_folder,
-                             "--clean_data_file", clean_data_file],
-                             inputs=[raw_data_file],
-                             outputs=[clean_data_folder],
-                             compute_target=aml_compute)
+        source_directory=e.sources_directory_train,
+        script_name=e.data_prep_script_path, 
+        arguments=["--raw_data_file", raw_data_file, 
+        "--clean_data_folder", clean_data_folder,
+        "--clean_data_file", clean_data_file],
+        inputs=[raw_data_file],
+        outputs=[clean_data_folder],
+        compute_target=aml_compute)
 
     print("Step Prepare Data created")
 
-    new_model_file = PipelineParameter(name="new_model_file ",
-                                       default_value='/'+e.model_name+'.pkl')
-    new_model_folder = PipelineData("new_model_folder", datastore=datastore)
-
+    # Create an Estimator (in this case we use the SKLearn estimator)
     est = SKLearn(source_directory=e.sources_directory_train,
-                  entry_script=e.train_script_path,
-                  conda_packages=['scikit-learn==0.20.3'],
-                  compute_target=aml_compute)
+        entry_script=e.train_script_path,
+        conda_packages=['scikit-learn==0.20.3'],
+        compute_target=aml_compute)
 
-    trainingStep = EstimatorStep(name="Model Training", 
-                        estimator=est,
-                        estimator_entry_script_arguments=[
-                        "--clean_data_folder", clean_data_folder,
-                        "--new_model_folder", new_model_folder,
-                        "--clean_data_file", clean_data_file.default_value,
-                        "--new_model_file", new_model_file.default_value],
-                        runconfig_pipeline_params=None,
-                        inputs=[clean_data_folder],
-                        outputs=[new_model_folder],
-                        compute_target=aml_compute)
+    trainingStep = EstimatorStep(
+        name="Model Training", 
+        estimator=est,
+        estimator_entry_script_arguments=
+        ["--clean_data_folder", clean_data_folder,
+        "--new_model_folder", new_model_folder,
+        "--clean_data_file", clean_data_file.default_value,
+        "--new_model_file", new_model_file.default_value],
+        runconfig_pipeline_params=None, 
+        inputs=[clean_data_folder], 
+        outputs=[new_model_folder], 
+        compute_target=aml_compute)
 
     print("Step Train created")
 
-    model_name_param = PipelineParameter(name="model_name",
-                            default_value=e.model_name)
+    model_name_param = PipelineParameter(name="model_name", default_value=model_name)
 
-    evaluateStep = PythonScriptStep(name="Evaluate Model",
-                         source_directory=e.sources_directory_train,
-                         script_name=e.evaluate_script_path,
-                         arguments=["--model_name", model_name_param],
-                         compute_target=aml_compute)
+    evaluateStep = PythonScriptStep(
+        name="Evaluate Model",
+        source_directory=e.sources_directory_train,
+        script_name=e.evaluate_script_path, 
+        arguments=["--model_name", model_name_param],
+        compute_target=aml_compute)
 
     print("Step Evaluate created")
 
-    registerStep = PythonScriptStep(name="Register Model",
-                        source_directory=e.sources_directory_train,
-                        script_name=e.register_script_path, 
-                        arguments=["--new_model_folder", new_model_folder,
-                              "--new_model_file", new_model_file,
-                              "--model_name", model_name],
-                        inputs=[new_model_folder],
-                        compute_target=aml_compute)
+    registerStep = PythonScriptStep(
+        name="Register Model",
+        source_directory=e.sources_directory_train,
+        script_name=e.register_script_path, 
+        arguments=["--new_model_folder", new_model_folder,
+                   "--new_model_file", new_model_file,
+                   "--model_name", model_name_param],
+        inputs=[new_model_folder],
+        compute_target=aml_compute)
 
     print("Step Register created")
 
@@ -130,7 +128,7 @@ def main():
 
     pipeline = Pipeline(workspace=aml_workspace, steps=[registerStep])
     pipeline.validate()
-    print ("Pipeline is built")
+    print("Pipeline is built")
 
     pipeline._set_experiment_name
     published_pipeline = pipeline.publish(
