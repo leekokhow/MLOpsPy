@@ -37,7 +37,7 @@ def main():
                            model_path=model_pkl_file,
                            tags=tags)
     run.log('Model registered', 'New model ' + model.name
-        + ' version ' + str(model.version))
+            + ' version ' + str(model.version))
 
 
 if __name__ == '__main__':
