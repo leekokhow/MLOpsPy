@@ -14,7 +14,7 @@ def prepare_dataset(dataset, run):
     dataset["salary"] = dataset["salary"].map(salary_map)
 
     # Create dummy variables for department feature
-    dataset = pd.get_dummies(dataset, columns=["department"], 
+    dataset = pd.get_dummies(dataset, columns=["department"],
                              drop_first=True)
 
     # Get number of positve and negative examples
