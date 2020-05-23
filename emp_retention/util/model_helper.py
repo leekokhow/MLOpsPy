@@ -1,8 +1,7 @@
 """
 model_helper.py
 """
-from azureml.core import Run
-from azureml.core import Workspace
+from azureml.core import Run, Workspace
 from azureml.core.model import Model as AMLModel
 
 

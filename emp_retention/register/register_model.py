@@ -1,6 +1,6 @@
 
 import argparse
-from azureml.core import Run
+from azureml.core import Run, Dataset
 from azureml.core.model import Model
 
 
@@ -29,15 +29,30 @@ def main():
     for key in metrics:
         tags[key] = run.parent.get_metrics(key).get(key)
 
+    # Store BuildId
+    parent_tags = run.parent.get_tags()
+    build_id = 'BuildId'
+    try:
+        build_id = parent_tags["BuildId"]
+        tags['BuildId'] = build_id
+    except KeyError:
+        print("BuildId tag not found on parent run.")
+        print(f"Tags present: {parent_tags}")
+
     # Register the new model, note the metric values are stored in "tags".
-    workspace = run.experiment.workspace
     model_pkl_file = args.new_model_folder + args.new_model_file
+    workspace = run.experiment.workspace
+    dataset_name = 'predict-employee-retention-training-data'
     model = Model.register(workspace=workspace,
                            model_name=args.model_name,
                            model_path=model_pkl_file,
-                           tags=tags)
+                           tags=tags,
+                           datasets=[('training data',
+                                      Dataset.get_by_name(workspace,
+                                                          dataset_name))])
+
     run.log('Model registered', 'New model ' + model.name
-            + ' version ' + str(model.version))
+            + ' version ' + str(model.version) + ' BuildId ' + build_id)
 
 
 if __name__ == '__main__':
