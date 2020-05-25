@@ -29,9 +29,15 @@ def main():
     for key in metrics:
         tags[key] = run.parent.get_metrics(key).get(key)
 
-    # Store parent run id to identify the model created with this run.
-    parent_run_id = run.parent.id
-    tags['parent_run_id'] = parent_run_id
+    # Store BuildId
+    parent_tags = run.parent.get_tags()
+    build_id = 'BuildId'
+    try:
+        build_id = parent_tags["BuildId"]
+        tags['BuildId'] = build_id
+    except KeyError:
+        print("BuildId tag not found on parent run.")
+        print(f"Tags present: {parent_tags}")
 
     # Register the new model, note the metric values are stored in "tags".
     model_pkl_file = args.new_model_folder + args.new_model_file
@@ -46,8 +52,7 @@ def main():
                                                           dataset_name))])
 
     run.log('Model registered', 'New model ' + model.name
-            + ' version ' + str(model.version)
-            + ' parent_run_id ' + parent_run_id)
+            + ' version ' + str(model.version) + ' BuildId ' + build_id)
 
 
 if __name__ == '__main__':

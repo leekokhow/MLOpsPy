@@ -20,7 +20,7 @@ def main():
         experiment_name = os.environ.get("EXPERIMENT_NAME")
         resource_group = os.environ.get("RESOURCE_GROUP")
         subscription_id = os.environ.get("SUBSCRIPTION_ID")
-        # build_id = os.environ.get('BUILD_BUILDID')
+        build_id = os.environ.get('BUILD_BUILDID')
         aml_workspace = Workspace.get(
             name=workspace_name,
             subscription_id=subscription_id,
@@ -47,24 +47,24 @@ def main():
     )
 
     args = parser.parse_args()
-    # if (args.build_id is not None):
-    #    build_id = args.build_id
+    if (args.build_id is not None):
+        build_id = args.build_id
     model_name = e.model_name
 
     try:
-        # Not using BuildId here because it can be out of sync.
-        # tag_name = 'BuildId'
-        tag_name = 'parent_run_id'
+        tag_name = 'BuildId'
         model = get_latest_model(
-            model_name, tag_name, run.parent.id, exp.workspace)
+            model_name, tag_name, build_id, exp.workspace)
         if (model is not None):
-            print("Model was registered for this run.")
+            print("Model was registered for this run. BuildId=" + build_id)
         if (model is None):
-            print("Model was not registered for this run.")
+            print("Model was not registered for this run. BuildId=" + build_id)
             sys.exit(1)
     except Exception as e:
         print(e)
-        print("Model was not registered for this run.")
+        print("Exception thrown and model "
+              + "not registered for this run. BuildId="
+              + build_id)
         sys.exit(1)
 
     # Save the Model Version for other AzDO jobs after script is complete

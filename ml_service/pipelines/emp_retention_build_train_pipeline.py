@@ -76,7 +76,8 @@ def main():
                                                clean_data_file],
                                     inputs=[raw_data_file],
                                     outputs=[clean_data_folder],
-                                    compute_target=aml_compute)
+                                    compute_target=aml_compute,
+                                    allow_reuse=False)
 
     print("Step Prepare Data created")
 
@@ -104,7 +105,8 @@ def main():
         runconfig_pipeline_params=None,
         inputs=[clean_data_folder],
         outputs=[new_model_folder],
-        compute_target=aml_compute)
+        compute_target=aml_compute,
+        allow_reuse=False)
 
     print("Step Train created")
 
@@ -116,7 +118,8 @@ def main():
         source_directory=e.sources_directory_train,
         script_name=e.evaluate_script_path,
         arguments=["--model_name", model_name_param],
-        compute_target=aml_compute)
+        compute_target=aml_compute,
+        allow_reuse=False)
 
     print("Step Evaluate created")
 
@@ -128,7 +131,8 @@ def main():
                    "--new_model_file", new_model_file,
                    "--model_name", model_name_param],
         inputs=[new_model_folder],
-        compute_target=aml_compute)
+        compute_target=aml_compute,
+        allow_reuse=False)
 
     print("Step Register created")
 
