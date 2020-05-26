@@ -27,9 +27,9 @@ def call_web_service(e, service_type, service_name):
     if service.auth_enabled:
         service_keys = service.get_keys()
         headers['Authorization'] = 'Bearer ' + service_keys[0]
-    print("Testing service")
     print("url: %s" % service.scoring_uri)
     output = call_web_app(service.scoring_uri, headers)
+    print("output: ")
     print(output)
     return output
 
@@ -81,7 +81,7 @@ def main():
     else:
         output = call_web_service(e, args.type, args.service)
     print("Verifying service output")
-    print('len(output)'+str(len(output)))
+    print('len(output) = '+str(len(output)))
     assert len(output) == output_len
     print("Smoke test successful.")
 
