@@ -1,57 +1,89 @@
----
-page_type: sample
-languages:
-- python
-products:
-- azure
-- azure-machine-learning-service
-- azure-devops
-description: "Code which demonstrates how to set up and operationalize an MLOps flow leveraging Azure Machine Learning and Azure DevOps."
----
-
 # MLOps with Azure ML
 
-[![Build Status](https://aidemos.visualstudio.com/MLOps/_apis/build/status/microsoft.MLOpsPython?branchName=master)](https://aidemos.visualstudio.com/MLOps/_build/latest?definitionId=151&branchName=master)
+This example is based on [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml).
 
-MLOps will help you to understand how to build a Continuous Integration and Continuous Delivery pipeline for an ML/AI project. We will be using the Azure DevOps Project for build and release/deployment pipelines along with Azure ML services for model retraining pipeline, model management and operationalization.
-
-![ML lifecycle](/docs/images/ml-lifecycle.png)
-
-This template contains code and pipeline definitions for a machine learning project that demonstrates how to automate an end to end ML/AI workflow.
-
-## Architecture and Features
-
-Architecture Reference: [Machine learning operationalization (MLOps) for Python models using Azure Machine Learning](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/ai/mlops-python)
-
-This reference architecture shows how to implement continuous integration (CI), continuous delivery (CD), and retraining pipeline for an AI application using Azure DevOps and [Azure Machine Learning](/azure/machine-learning/service/overview-what-is-azure-ml). The solution is built on the scikit-learn diabetes dataset but can be easily adapted for any AI scenario and other popular build systems such as Jenkins and Travis.
-
-The build pipelines include DevOps tasks for data sanity tests, unit tests, model training on different compute targets, model version management, model evaluation/model selection, model deployment as realtime web service, staged deployment to QA/prod and integration testing.
-
-## Prerequisite
-
-- Active Azure subscription
-- At least contributor access to Azure subscription
-
-## Getting Started
-
-To deploy this solution in your subscription, follow the manual instructions in the [getting started](docs/getting_started.md) doc. Then optionally follow the guide for [integrating your own code](docs/custom_model.md) with this repository template.
-
-### Repo Details
-
-You can find the details of the code and scripts in the repository [here](/docs/code_description.md)
+The purpose is to demonstrate how to automate an end to end ML workflow using Azure DevOps
 
 ### References
 
-- [Azure Machine Learning (Azure ML) Service Workspace](https://docs.microsoft.com/en-us/azure/machine-learning/service/overview-what-is-azure-ml)
-- [Azure ML CLI](https://docs.microsoft.com/en-us/azure/machine-learning/service/reference-azure-machine-learning-cli)
-- [Azure ML Samples](https://docs.microsoft.com/en-us/azure/machine-learning/service/samples-notebooks)
-- [Azure ML Python SDK Quickstart](https://docs.microsoft.com/en-us/azure/machine-learning/service/quickstart-create-workspace-with-python)
-- [Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/?view=vsts)
+- Read this [MLOps with Azure ML](https://github.com/microsoft/MLOpsPython) before you proceed.
 
-## Contributing
+### Setup steps for this example
 
-This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit <https://cla.microsoft.com.>
+1. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+2. Create the variables in "devopsforai-aml-vg" group. Take note to change BASE_NAME to a unique name.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+3. Create resource connection:
+Project Settings > Service Connection > Create Service connection > Azure Resource Manager
+
+Service Principal (automatic)
+
+Click Next
+
+Scope level : Subscription
+
+Subscription : <choose your subscription>
+
+Service connection name : azure-resource-connection
+
+Checked "Grant access permission to all pipelines"
+
+Cick Save
+
+4. Run the ARM template to create the cloud resources:
+Pipelines > Create Pipeline > Azure Repos Git > MLOpsPy > Existing Azure Pipelines YAML file
+
+Select Path: /environment_setup/iac-create-environment-pipeline-arm.yml
+
+5. Create Compute clusters in AML Workspace:
+Computer name: cpucluster
+
+Virtual machine size STANDARD_DS2_V2
+
+Virtual machine priority Dedicated
+
+Minimum number of nodes 0
+
+Maximum number of nodes 2
+
+Idle seconds before scale down 120
+
+6. Run pipeline "/.pipelines/emp_retention-ci.yml".
+
+7. Once your workspace has been created in Azure, create a workspace connection in Azure DevOps:
+Project Settings > Service Connection > New Service connection > Azure Resource Manager
+
+Service Principal (automatic)
+
+Click Next
+
+Scope level : Machine Learning Workspace
+
+Subscription : choose your subscription
+
+Resource group : mlopspy-RG
+
+Machine Learning Workspace : mlopspy-AML-WS
+
+Service connection name : aml-workspace-connection
+
+Checked "Grant access permission to all pipelines"
+
+Click Save
+
+8. Use Azure Kubernetes
+- You need to create "Inference Cluster" first: 
+Either 
+
+Option 1: Create a new AKS cluster : Name it as "aks" with 2 x Standard D4 v2 (8 vcpus, 28 GiB memory) for Dev-test environment. Requires minimum of 12 vcpus.
+
+Option 2: Refer to [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml) section K.1 on how to create a DEV_TEST AKS cluster. 
+
+- Make sure these variables are added to devopsforai-aml-vg group in Azure DevOps:
+
+AKS_COMPUTE_NAME : aks
+
+AKS_DEPLOYMENT_NAME : mlops-aks
+
+9. Run "/.pipelines/emp_retention-ci.yml" to start the DevOps pipeline. 
