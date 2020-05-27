@@ -6,7 +6,8 @@ The purpose is to demonstrate how to automate an end to end ML workflow using Az
 
 ### References
 
-- Read this [MLOps with Azure ML](https://github.com/microsoft/MLOpsPython) before you proceed.
+- Read [MLOps with Azure ML](https://github.com/microsoft/MLOpsPython) before you proceed.
+- Read [Bring your own code with the MLOpsPython repository template](https://github.com/microsoft/MLOpsPython/blob/master/docs/custom_model.md) to create your own custom model (which is what I did for this example). 
 
 ### Setup steps for this example
 
