@@ -20,7 +20,7 @@ Project Settings > Service Connection > Create Service connection > Azure Resour
 
 Service Principal (automatic)
 
-Click Next
+Click **Next**
 
 Scope level : Subscription
 
@@ -30,7 +30,7 @@ Service connection name : azure-resource-connection
 
 Checked "Grant access permission to all pipelines"
 
-Cick Save
+Cick **Save**
 
 4. Run the ARM template to create the cloud resources:
 Pipelines > Create Pipeline > Azure Repos Git > MLOpsPy > Existing Azure Pipelines YAML file
@@ -57,7 +57,7 @@ Project Settings > Service Connection > New Service connection > Azure Resource 
 
 Service Principal (automatic)
 
-Click Next
+Click **Next**
 
 Scope level : Machine Learning Workspace
 
@@ -71,11 +71,10 @@ Service connection name : aml-workspace-connection
 
 Checked "Grant access permission to all pipelines"
 
-Click Save
+Click **Save**
 
 8. Use Azure Kubernetes
 - You need to create "Inference Cluster" first: 
-Either 
 
 Option 1: Create a new AKS cluster : Name it as "aks" with 2 x Standard D4 v2 (8 vcpus, 28 GiB memory) for Dev-test environment. Requires minimum of 12 vcpus.
 
