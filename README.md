@@ -24,7 +24,7 @@ Click **Next**
 
 Scope level : Subscription
 
-Subscription : <choose your subscription>
+Subscription : [choose your subscription]
 
 Service connection name : azure-resource-connection
 
