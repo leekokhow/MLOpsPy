@@ -78,7 +78,7 @@ Click **Save**
 
 Option 1: Create a new AKS cluster : Name it as "aks" with 2 x Standard D4 v2 (8 vcpus, 28 GiB memory) for Dev-test environment. Requires minimum of 12 vcpus.
 
-Option 2: Refer to [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml) section K.1 on how to create a DEV_TEST AKS cluster. 
+Option 2: Refer to [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml/blob/master/predict-employee-retention-part3-pipelines.ipynb) section K.1 on how to create a DEV_TEST AKS cluster. 
 
 - Make sure these variables are added to devopsforai-aml-vg group in Azure DevOps:
 
