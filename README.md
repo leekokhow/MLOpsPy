@@ -11,6 +11,8 @@ The purpose is to demonstrate how to automate an end to end ML workflow using Az
 
 ### Setup steps for this example
 
+0. Create an Azure DevOps account, install the Machine Learning (by Microsoft DevLabs) extension.
+
 1. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
 
 2. Create the variables in "devopsforai-aml-vg" group. Take note to change BASE_NAME to a unique name.
