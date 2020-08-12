@@ -4,7 +4,7 @@ This example is based on [predict-employee-retention-part3-pipelines](https://gi
 
 The purpose is to demonstrate how to automate an end to end ML workflow using Azure DevOps.
 
-An article that covers [Creating End-to-End MLOps pipelines using Azure ML and Azure Pipelines](https://benalexkeen.com/creating-end-to-end-mlops-pipelines-using-azure-ml-and-azure-pipelines-part-1/)
+You may want to read this article by Ben Keen that covers [Creating End-to-End MLOps pipelines using Azure ML and Azure Pipelines](https://benalexkeen.com/creating-end-to-end-mlops-pipelines-using-azure-ml-and-azure-pipelines-part-1/)
 
 
 ### References
