@@ -2,12 +2,15 @@
 
 This example is based on [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml).
 
-The purpose is to demonstrate how to automate an end to end ML workflow using Azure DevOps
+The purpose is to demonstrate how to automate an end to end ML workflow using Azure DevOps.
+
+An article that covers [Creating End-to-End MLOps pipelines using Azure ML and Azure Pipelines](https://benalexkeen.com/creating-end-to-end-mlops-pipelines-using-azure-ml-and-azure-pipelines-part-1/)
+
 
 ### References
 
 - Read [MLOps with Azure ML](https://github.com/microsoft/MLOpsPython) before you proceed.
-- Read [Bring your own code with the MLOpsPython repository template](https://github.com/microsoft/MLOpsPython/blob/master/docs/custom_model.md) to create your own custom model (which is what I did for this example). 
+- Read [Bring your own code with the MLOpsPython repository template](https://github.com/microsoft/MLOpsPython/blob/master/docs/custom_model.md) to create your own custom model (which is what I did for this example).
 
 ### Setup steps for this example
 
