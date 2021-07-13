@@ -18,7 +18,7 @@ You may want to read this article by Ben Keen that covers [Creating End-to-End M
 
 1. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
 
-2. [Create the variables](https://github.com/microsoft/MLOpsPython/blob/master/docs/getting_started.md#create-a-variable-group-for-your-pipeline) in "devopsforai-aml-vg" group. Take note to change BASE_NAME to a unique name.
+2. [Create the variable group](https://github.com/microsoft/MLOpsPython/blob/master/docs/getting_started.md#create-a-variable-group-for-your-pipeline) called "devopsforai-aml-vg". Take note to change BASE_NAME to a unique name. You can refer to "Create Variables for MLOpsPy.xls" for the variables.
 
 3. Create resource connection:
 Project Settings > Service Connection > Create Service connection > Azure Resource Manager
