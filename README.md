@@ -14,81 +14,110 @@ You may want to read this article by Ben Keen that covers [Creating End-to-End M
 
 ### Setup steps for this example
 
-0. Create an Azure DevOps account, install the Machine Learning (by Microsoft DevLabs) extension.
+1. Create an Azure DevOps account, install the Machine Learning (by Microsoft DevLabs) extension.
 
-1. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
+2. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
 
-2. [Create the variable group](https://github.com/microsoft/MLOpsPython/blob/master/docs/getting_started.md#create-a-variable-group-for-your-pipeline) called "devopsforai-aml-vg". Take note to change BASE_NAME to a unique name. You can refer to "Create Variables for MLOpsPy.xlsx" for the variables.
+3. [Create the variable group](https://github.com/microsoft/MLOpsPython/blob/master/docs/getting_started.md#create-a-variable-group-for-your-pipeline) called "devopsforai-aml-vg". Take note to change BASE_NAME to a unique name. You can refer to "Create Variables for MLOpsPy.xlsx" for the variables.
 
-3. Create resource connection:
-Project Settings > Service Connection > Create Service connection > Azure Resource Manager
+4. Create a resource connection in Azure DevOps:
+Project Settings > Service connections > New service connection > Azure Resource Manager
 
-Service Principal (automatic)
+Choose "Service principal (automatic)"
 
 Click **Next**
 
 Scope level : Subscription
-
 Subscription : [choose your subscription]
-
+[Resource group : mlopspy-RG (choose this if it has been created)]
 Service connection name : azure-resource-connection
-
 Checked "Grant access permission to all pipelines"
 
 Cick **Save**
 
-4. Run the ARM template to create the cloud resources:
-Pipelines > Create Pipeline > Azure Repos Git > MLOpsPy > Existing Azure Pipelines YAML file
+5. (Skip this if you have already created Azure Machine Learning service in the portal) Run the ARM template to create the cloud resources:
+Pipelines > New Pipeline > Azure Repos Git > MLOpsPy > Existing Azure Pipelines YAML file
 
 Select Path: /environment_setup/iac-create-environment-pipeline-arm.yml
+Click **Continue**
+Click **Run**
 
-5. Create Compute clusters in AML Workspace:
+Note: if you want to remove the environment, select path: /environment_setup/iac-create-environment-pipeline-arm.yml. 
+
+6. Once Azure Machine Learning Workspace has been created successfully, create a "Compute clusters" to be used for model training:
+Launch your Azure Machine Learning Studio > Compute > Compute clusters > +New
+
+Location : Southeast Asia
+Virtual machine priority : Dedicated
+Virtual machine type : CPU
+Virtual machine size : Select from recommended options
+Choose "Standard_DS2_V2"
+
+Click Next
+
 Computer name: cpucluster
+Minimum number of nodes : 0
+Maximum number of nodes : 2
+Idle seconds before scale down : 120
 
-Virtual machine size STANDARD_DS2_V2
+Click Create
 
-Virtual machine priority Dedicated
-
-Minimum number of nodes 0
-
-Maximum number of nodes 2
-
-Idle seconds before scale down 120
-
-6. Run pipeline "/.pipelines/emp_retention-ci.yml".
-
-7. Once your workspace has been created in Azure, create a workspace connection in Azure DevOps:
-Project Settings > Service Connection > New Service connection > Azure Resource Manager
+7. Create a workspace connection in Azure DevOps:
+Project Settings > Service connections > New service connection > Azure Resource Manager
 
 Service Principal (automatic)
 
 Click **Next**
 
 Scope level : Machine Learning Workspace
-
 Subscription : choose your subscription
-
 Resource group : mlopspy-RG
-
 Machine Learning Workspace : mlopspy-AML-WS
-
 Service connection name : aml-workspace-connection
 
 Checked "Grant access permission to all pipelines"
 
 Click **Save**
 
-8. Use Azure Kubernetes
-- You need to create "Inference Cluster" first: 
+8. To deploy the model into Azure Kubernetes, you need to create an "Inference clusters": 
+Launch your Azure Machine Learning Studio > Compute > Inference clusters > +New
 
-Option 1: Create a new AKS cluster : Name it as "aks" with 2 x Standard D4 v2 (8 vcpus, 28 GiB memory) for Dev-test environment. Requires minimum of 12 vcpus.
+Kubernetes Service : Create new
+Location : Southeast Asia
 
-Option 2: Refer to [predict-employee-retention-part3-pipelines](https://github.com/leekokhow/azureml/blob/master/predict-employee-retention-part3-pipelines.ipynb) section K.1 on how to create a DEV_TEST AKS cluster. 
+Choose "Standard_D4_v2" (8 cores, 28GB RAM, 400GB storage)
 
-- Make sure these variables are added to devopsforai-aml-vg group in Azure DevOps:
+Click **Next**
+
+Compute name : aks
+Cluster purpose : Dev-test
+
+Click **Create**
+
+Make sure these variables are added to devopsforai-aml-vg group in Azure DevOps:
 
 AKS_COMPUTE_NAME : aks
+AKS_DEPLOYMENT_NAME : mlopspy-aks
 
-AKS_DEPLOYMENT_NAME : mlops-aks
+9. Create a training dataset that serves as input for model training:
+Launch your Azure Machine Learning Studio > Datasets > Registered datasets > +Create dataset > From local files
 
-9. Run "/.pipelines/emp_retention-ci.yml" to start the DevOps pipeline. 
+Name: predict-employee-retention-training-data
+Dataset type: File
+
+Click **Next**
+
+Select or create a datastore: workspaceblobstore
+Upload: Upload Files: <use the training-data.csv found in MLOpsPy/data/ folder>
+Upload path : predict-employee-retention-training-data
+
+Click **Next**
+Click **Create**
+
+10. Run the DevOps pipeline:
+Pipelines > New Pipeline > Azure Repos Git > MLOpsPy > Existing Azure Pipelines YAML file
+
+Select Path: /.pipelines/emp_retention-ci.yml
+Click **Continue**
+Click **Run**
+
