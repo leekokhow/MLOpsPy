@@ -102,14 +102,28 @@ Cluster purpose : Dev-test
 
 Click **Create**
 
-Make sure you have added these variables to devopsforai-aml-vg group in Azure DevOps:
 
-AKS_COMPUTE_NAME : aks
+8. Create a training dataset that serves as input for model training:
+Launch your Azure Machine Learning Studio > Datasets > Registered datasets > +Create dataset > From local files
 
-AKS_DEPLOYMENT_NAME : mlopspy-aks
+Name: predict-employee-retention-training-data
+
+Dataset type: File
+
+Click **Next**
+
+Select or create a datastore: workspaceblobstore
+
+Upload: Upload Files: <use the training-data.csv found in MLOpsPy/data/ folder>
+
+Upload path : predict-employee-retention-training-data
+
+Click **Next**
+
+Click **Create**
 
 
-8. Create a workspace connection in Azure DevOps:
+9. Create a workspace connection in Azure DevOps:
 
 Project Settings > Service connections > New service connection > Azure Resource Manager
 
@@ -130,26 +144,6 @@ Service connection name : aml-workspace-connection
 Checked "Grant access permission to all pipelines"
 
 Click **Save**
-
-
-9. Create a training dataset that serves as input for model training:
-Launch your Azure Machine Learning Studio > Datasets > Registered datasets > +Create dataset > From local files
-
-Name: predict-employee-retention-training-data
-
-Dataset type: File
-
-Click **Next**
-
-Select or create a datastore: workspaceblobstore
-
-Upload: Upload Files: <use the training-data.csv found in MLOpsPy/data/ folder>
-
-Upload path : predict-employee-retention-training-data
-
-Click **Next**
-
-Click **Create**
 
 
 10. Run the DevOps pipeline:
