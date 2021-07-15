@@ -81,7 +81,7 @@ Maximum number of nodes : 2
 
 Idle seconds before scale down : 120
 
-Click Create
+Click **Create**
 
 
 7. Create a workspace connection in Azure DevOps:
