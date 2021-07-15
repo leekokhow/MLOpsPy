@@ -17,7 +17,7 @@ You may want to read this article by Ben Keen that covers [Creating End-to-End M
 1. Create an Azure DevOps account, install the Machine Learning (by Microsoft DevLabs) extension.
 
 
-2. Create an Azure DevOps project and named it as "MLOpsPy", launch this project and proceed the following steps.
+2. Create an Azure DevOps project and named it as "MLOpsPy" and import repository from https://github.com/leekokhow/MLOpsPy. Launch this project and proceed the following steps.
 
 
 3. [Create the variable group](https://github.com/microsoft/MLOpsPython/blob/master/docs/getting_started.md#create-a-variable-group-for-your-pipeline) called "devopsforai-aml-vg". Take note to change BASE_NAME to a unique name. You can refer to "Create Variables for MLOpsPy.xlsx" for the variables.
