@@ -14,7 +14,7 @@ You may want to read this article by Ben Keen that covers [Creating End-to-End M
 
 ### Setup steps for this example
 
-1. Create an Azure DevOps account, install the Machine Learning (by Microsoft DevLabs) extension.
+1. In your Azure DevOps account, create a new "Organization" that will host your MLOps project. Install the Machine Learning (by Microsoft DevLabs) extension from the marketplace into the "Organization".
 
 
 2. Create an Azure DevOps project and named it as "MLOpsPy" and import repository from https://github.com/leekokhow/MLOpsPy. Launch this project and proceed the following steps.
