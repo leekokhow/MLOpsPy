@@ -71,7 +71,7 @@ Virtual machine size : Select from recommended options
 
 Choose "Standard_DS2_V2"
 
-Click Next
+Click **Next**
 
 Computer name: cpucluster
 
