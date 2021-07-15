@@ -84,7 +84,32 @@ Idle seconds before scale down : 120
 Click **Create**
 
 
-7. Create a workspace connection in Azure DevOps:
+7. To deploy the model into Azure Kubernetes, you need to create an "Inference clusters":
+
+Launch your Azure Machine Learning Studio > Compute > Inference clusters > +New
+
+Kubernetes Service : Create new
+
+Location : Southeast Asia
+
+Choose "Standard_D4_v2" (8 cores, 28GB RAM, 400GB storage)
+
+Click **Next**
+
+Compute name : aks
+
+Cluster purpose : Dev-test
+
+Click **Create**
+
+Make sure you have added these variables to devopsforai-aml-vg group in Azure DevOps:
+
+AKS_COMPUTE_NAME : aks
+
+AKS_DEPLOYMENT_NAME : mlopspy-aks
+
+
+8. Create a workspace connection in Azure DevOps:
 
 Project Settings > Service connections > New service connection > Azure Resource Manager
 
@@ -105,31 +130,6 @@ Service connection name : aml-workspace-connection
 Checked "Grant access permission to all pipelines"
 
 Click **Save**
-
-
-8. To deploy the model into Azure Kubernetes, you need to create an "Inference clusters":
-
-Launch your Azure Machine Learning Studio > Compute > Inference clusters > +New
-
-Kubernetes Service : Create new
-
-Location : Southeast Asia
-
-Choose "Standard_D4_v2" (8 cores, 28GB RAM, 400GB storage)
-
-Click **Next**
-
-Compute name : aks
-
-Cluster purpose : Dev-test
-
-Click **Create**
-
-Make sure these variables are added to devopsforai-aml-vg group in Azure DevOps:
-
-AKS_COMPUTE_NAME : aks
-
-AKS_DEPLOYMENT_NAME : mlopspy-aks
 
 
 9. Create a training dataset that serves as input for model training:
