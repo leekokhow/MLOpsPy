@@ -31,9 +31,9 @@ Choose "Service principal (automatic)"
 
 Click **Next**
 
-Scope level : Machine Learning Workspace
+Scope level : Subscription
 
-Subscription : [choose your subscription]
+Subscription : choose your subscription
 
 [Resource group : mlopspy-RG (or an existing resource group that you have created)]
 
