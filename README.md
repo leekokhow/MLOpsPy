@@ -156,6 +156,12 @@ Click **Continue**
 Click **Run**
 
 
-11. Once the DevOps pipeline completed successfully, you can check for the ACI and AKS endpoints in Azure Machine Learning Studio.
+11. Once the DevOps pipeline completed successfully, you can check for the ACI and AKS endpoints created in Azure Machine Learning Studio.
 
-Note: To avoid excessive cost, delete the Compute clusters, Inference clusters, models, endpoints that were created after your finish exploring this project.  
+12. You may want to delete/disable these to avoid excessive cost:
+
+- Delete **cpucluster** compute clusters and **aks** inference clusters (need to re-create these before re-run MLOps)
+
+- Delete **mlopspy-aci** and **mlopspy-aks** real-time endpoints. 
+
+- Disable **Employee Retention Pipeline** pipeline endpoints.  
