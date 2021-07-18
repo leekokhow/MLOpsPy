@@ -31,11 +31,11 @@ Choose "Service principal (automatic)"
 
 Click **Next**
 
-Scope level : Subscription
+Scope level : Machine Learning Workspace
 
 Subscription : [choose your subscription]
 
-[Resource group : mlopspy-RG (choose this if it has been created)]
+[Resource group : mlopspy-RG (or an existing resource group that you have created)]
 
 Service connection name : azure-resource-connection
 
@@ -61,7 +61,7 @@ Note: if you want to remove the environment, select path: /environment_setup/iac
 
 Launch your Azure Machine Learning Studio > Compute > Compute clusters > +New
 
-Location : Southeast Asia
+Location : Southeast Asia (or other location)
 
 Virtual machine priority : Dedicated
 
@@ -90,7 +90,7 @@ Launch your Azure Machine Learning Studio > Compute > Inference clusters > +New
 
 Kubernetes Service : Create new
 
-Location : Southeast Asia
+Location : Southeast Asia (or other location)
 
 Choose "Standard_D4_v2" (8 cores, 28GB RAM, 400GB storage)
 
@@ -135,9 +135,9 @@ Scope level : Machine Learning Workspace
 
 Subscription : choose your subscription
 
-Resource group : mlopspy-RG
+Resource group : mlopspy-RG (or an existing resource group that you have created)
 
-Machine Learning Workspace : mlopspy-AML-WS
+Machine Learning Workspace : mlopspy-AML-WS (or an existing Azure Machine Learning workspace that you have created)
 
 Service connection name : aml-workspace-connection
 
